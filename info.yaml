@@ -1,7 +1,7 @@
 # Tiny Tapeout project information
 project:
   title:        ""      # 
-  author:       ""      # Your name
+  author:       ""      # 
   
   description:  ""      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
