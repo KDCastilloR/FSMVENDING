@@ -6,7 +6,7 @@ module tt_um_KDCastillo_FSMVENDING (
     output wire [7:0] uio_out,
     output wire [7:0] uio_oe,
     input  wire       ena,
-    input  wire       clk,
+    input  wire       clk,     
     input  wire       rst_n
 );
 
