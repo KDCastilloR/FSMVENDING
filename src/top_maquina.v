@@ -1,17 +1,26 @@
-`timescale 1ns / 1ps
-module top_maquina (
-    input logic clk,
-    input logic reset,
-    input logic [1:0] moneda,
-    input logic comprarA,
-    input logic comprarB,
-    output logic listoA,
-    output logic listoB,
-    output logic [3:0] total,
-    output logic [3:0] cambio
+module tt_um_KDCastilloR_FSMVENDING (
+    input  [7:0] ui,
+    output [7:0] uo,
+    inout  [7:0] uio
 );
+    wire clk       = ui[0];
+    wire reset     = ui[1];
+    wire [1:0] moneda = ui[3:2];
+    wire comprarA  = ui[4];
+    wire comprarB  = ui[5];
 
-    logic vendA, vendB;
+    wire listoA, listoB;
+    wire [3:0] total;
+    wire [3:0] cambio;
+
+    wire vendA, vendB;
+
+    assign uo[0] = listoA;
+    assign uo[1] = listoB;
+    assign uo[5:2] = total; // bits 2 a 5 muestran el total acumulado
+    // uo[6], uo[7] libres
+
+    assign uio = 8'bz; // no se usan pines bidireccionales
 
     moore_fsm moore_inst (
         .clk(clk),
@@ -36,3 +45,4 @@ module top_maquina (
     );
 
 endmodule
+
