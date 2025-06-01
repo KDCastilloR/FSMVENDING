@@ -1,50 +1,43 @@
-`timescale 1ns / 1ps
 module moore_fsm (
-    input logic clk, reset,
-    input logic [1:0] moneda,
-    input logic comprarA, comprarB,
-    output logic listoA, listoB,
-    output logic [3:0] total,
-    output logic vendA, vendB
+    input clk,
+    input reset,
+    input [1:0] moneda,
+    input comprarA,
+    input comprarB,
+    output reg listoA,
+    output reg listoB,
+    output reg [3:0] total,
+    output reg vendA,
+    output reg vendB
 );
 
-    typedef enum logic [2:0] {
-        IDLE, WAIT, READY_A, READY_B
-    } state_t;
+    reg [2:0] estado, siguiente;
+    reg [3:0] acumulado;
 
-    state_t estado, siguiente;
+    localparam IDLE = 3'd0,
+               WAIT = 3'd1;
 
-    logic [3:0] acumulado;
-
-    always_ff @(posedge clk or posedge reset) begin
+    always @(posedge clk or posedge reset) begin
         if (reset)
             estado <= IDLE;
         else
             estado <= siguiente;
     end
 
-    always_ff @(posedge clk or posedge reset) begin
+    always @(posedge clk or posedge reset) begin
         if (reset)
-            acumulado <= 0;
-        else begin
-            if ((estado == IDLE || estado == WAIT) && moneda != 0) begin
-                case (moneda)
-                    2'b01: acumulado <= acumulado + 2;
-                    2'b10: acumulado <= acumulado + 3;
-                    2'b11: acumulado <= acumulado + 4;
-                    default: acumulado <= acumulado;
-                endcase
-            end else if (vendA || vendB) begin
-                acumulado <= acumulado;
-            end else begin
-                acumulado <= acumulado;
-            end
+            acumulado <= 4'd0;
+        else if ((estado == IDLE || estado == WAIT) && moneda != 2'b00) begin
+            case (moneda)
+                2'b01: acumulado <= acumulado + 2;
+                2'b10: acumulado <= acumulado + 3;
+                2'b11: acumulado <= acumulado + 4;
+                default: acumulado <= acumulado;
+            endcase
         end
     end
 
-    assign total = acumulado;
-
-    always_comb begin
+    always @(*) begin
         siguiente = estado;
         listoA = 0;
         listoB = 0;
@@ -55,8 +48,6 @@ module moore_fsm (
             IDLE: begin
                 if (acumulado >= 2)
                     siguiente = WAIT;
-                else
-                    siguiente = IDLE;
             end
             WAIT: begin
                 if (acumulado >= 3 && comprarB) begin
@@ -67,12 +58,14 @@ module moore_fsm (
                     vendA = 1;
                     listoA = 1;
                     siguiente = IDLE;
-                end else begin
-                    siguiente = WAIT;
                 end
             end
-            default: siguiente = IDLE;
         endcase
     end
 
+    always @(*) begin
+        total = acumulado;
+    end
+
 endmodule
+
