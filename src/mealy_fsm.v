@@ -10,7 +10,7 @@ module mealy_fsm (
     always @(posedge clk or posedge reset) begin
         if (reset)
             cambio <= 0;
-        else if (vendA)
+        else if (vendA) 
             cambio <= total - 2;
         else if (vendB)
             cambio <= total - 3;
